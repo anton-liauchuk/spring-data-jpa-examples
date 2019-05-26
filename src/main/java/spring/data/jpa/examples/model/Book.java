@@ -18,5 +18,6 @@ public class Book extends BaseEntity {
     @ManyToOne
     private Author author;
     private boolean inStock;
+    private String name;
 
 }
