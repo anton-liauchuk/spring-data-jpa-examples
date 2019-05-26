@@ -1,5 +1,6 @@
 package spring.data.jpa.examples.repository;
 
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -7,7 +8,7 @@ import spring.data.jpa.examples.model.Author;
 
 import java.util.List;
 
-public interface AuthorRepository extends CrudRepository<Author, Long> {
+public interface AuthorRepository extends CrudRepository<Author, Long>, JpaSpecificationExecutor {
 
     /**
      * Finds authors with books in stock.
