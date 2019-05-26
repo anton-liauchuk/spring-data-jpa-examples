@@ -1,5 +1,6 @@
 package spring.data.jpa.examples.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -11,6 +12,7 @@ import javax.persistence.ManyToOne;
 @Setter
 @ToString
 @Entity
+@AllArgsConstructor
 public class Book extends BaseEntity {
 
     @ManyToOne
