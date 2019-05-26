@@ -9,10 +9,13 @@ import spring.data.jpa.examples.model.Author;
 import spring.data.jpa.examples.model.Book;
 
 import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-public class UserRepositoryTest {
+public class AuthorRepositoryTest {
 
     @Autowired
     private AuthorRepository authorRepository;
@@ -20,10 +23,16 @@ public class UserRepositoryTest {
     @Test
     public void findAuthorsWithBooksInStock() {
         final Author author = new Author();
+        author.setName("author with books in stock");
         final Book bookInStock = new Book(author, true);
         final Book bookNotStock = new Book(author, false);
         author.setBooks(Arrays.asList(bookInStock, bookNotStock));
+        final Author authorWithoutBooks = new Author();
+        author.setName("author without books in stock");
+        authorRepository.saveAll(Arrays.asList(author, authorWithoutBooks));
 
-        authorRepository.save(author);
+        final List<Author> authorsWithBooksInStock = authorRepository.findByBooksInStock(true);
+        assertEquals(1, authorsWithBooksInStock.size());
+        assertEquals(author.getName(), authorsWithBooksInStock.get(0).getName());
     }
 }
