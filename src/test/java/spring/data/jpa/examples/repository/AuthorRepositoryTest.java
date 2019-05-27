@@ -29,77 +29,59 @@ public class AuthorRepositoryTest {
     @Autowired
     private AuthorRepository authorRepository;
 
+    private Author authorWithBooks;
+
     @Test
     public void findAuthorsWithBooksInStock() {
-        final Author author = new Author();
-        author.setName("author with books in stock");
-        final Book bookInStock = new Book(author, true, "book in stock");
-        final Book bookNotStock = new Book(author, false, "book not stock");
-        author.setBooks(Arrays.asList(bookInStock, bookNotStock));
-        final Author authorWithoutBooks = new Author();
-        author.setName("author without books in stock");
-        authorRepository.saveAll(Arrays.asList(author, authorWithoutBooks));
+        createAuthors();
 
         final List<Author> authorsWithBooksInStock = authorRepository.findByBooksInStock(true);
         assertEquals(1, authorsWithBooksInStock.size());
-        assertEquals(author.getName(), authorsWithBooksInStock.get(0).getName());
+        assertEquals(authorWithBooks.getName(), authorsWithBooksInStock.get(0).getName());
+    }
+
+    private void createAuthors() {
+        authorWithBooks = new Author();
+        authorWithBooks.setName("author with books in stock");
+        final Book bookInStock = new Book(authorWithBooks, true, "book in stock");
+        final Book bookNotStock = new Book(authorWithBooks, false, "book not stock");
+        authorWithBooks.setBooks(Arrays.asList(bookInStock, bookNotStock));
+        final Author authorWithoutBooks = new Author();
+        authorWithBooks.setName("author without books in stock");
+        authorRepository.saveAll(Arrays.asList(authorWithBooks, authorWithoutBooks));
     }
 
     @Test
     public void findByBooksInStockCustomQueryTest() {
-        final Author author = new Author();
-        author.setName("author with books in stock");
-        final Book bookInStock = new Book(author, true, "book in stock");
-        final Book bookNotStock = new Book(author, false, "book not stock");
-        author.setBooks(Arrays.asList(bookInStock, bookNotStock));
-        final Author authorWithoutBooks = new Author();
-        authorWithoutBooks.setName("author without books in stock");
-        authorRepository.saveAll(Arrays.asList(author, authorWithoutBooks));
+        createAuthors();
 
         final List<Author> authorsWithBooksInStock = authorRepository.findByBooksInStockCustomQuery(true);
         assertEquals(1, authorsWithBooksInStock.size());
-        assertEquals(author.getName(), authorsWithBooksInStock.get(0).getName());
+        assertEquals(authorWithBooks.getName(), authorsWithBooksInStock.get(0).getName());
     }
 
     @Test
     public void findAuthorsWithBooksInStockBySpecificationTest() {
-        final Author author = new Author();
-        author.setName("author with books in stock");
-        final Book bookInStock = new Book(author, true, "book in stock");
-        final Book bookNotStock = new Book(author, false, "book not stock");
-        author.setBooks(Arrays.asList(bookInStock, bookNotStock));
-        final Author authorWithoutBooks = new Author();
-        authorWithoutBooks.setName("author without books in stock");
-        authorRepository.saveAll(Arrays.asList(author, authorWithoutBooks));
+        createAuthors();
 
         final List<Author> authorsWithBooksInStock = authorRepository.findAll((Specification<Author>) (root, query, criteriaBuilder)
                 -> criteriaBuilder.equal(root.join(Author_.books).get(Book_.IN_STOCK), true));
         assertEquals(1, authorsWithBooksInStock.size());
-        assertEquals(author.getName(), authorsWithBooksInStock.get(0).getName());
+        assertEquals(authorWithBooks.getName(), authorsWithBooksInStock.get(0).getName());
     }
 
     @Test
     public void findAuthorByNameExampleMatcherTest() {
-        final Author author = new Author();
-        author.setName("author with books in stock");
-        final Book bookInStock = new Book(author, true, "book in stock");
-        final Book bookNotStock = new Book(author, false, "book not stock");
-        author.setBooks(Arrays.asList(bookInStock, bookNotStock));
-        final Author authorWithoutBooks = new Author();
-        authorWithoutBooks.setName("author without books in stock");
-        authorRepository.saveAll(Arrays.asList(author, authorWithoutBooks));
-
-        final Author expectedAuthor = new Author();
-        expectedAuthor.setName("author without books in stock");
+        createAuthors();
 
         ExampleMatcher matcher = ExampleMatcher.matching()
                 .withIgnorePaths("books", "id");
 
-        final Example<Author> example = Example.of(expectedAuthor, matcher);
+        final Example<Author> example = Example.of(authorWithBooks, matcher);
         final Iterable authors = authorRepository.findAll(example);
 
         assertEquals(1, ((Collection<?>) authors).size());
         assertThat(authorRepository.count(example), is(1L));
-        assertThat(((Author) authors.iterator().next()).getName(), CoreMatchers.equalTo(expectedAuthor.getName()));
+        assertThat(((Author) authors.iterator().next()).getName(), CoreMatchers.equalTo(authorWithBooks.getName()));
     }
 }
