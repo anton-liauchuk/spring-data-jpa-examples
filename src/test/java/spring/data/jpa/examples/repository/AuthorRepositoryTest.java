@@ -1,6 +1,7 @@
 package spring.data.jpa.examples.repository;
 
 import org.hamcrest.CoreMatchers;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,16 +32,8 @@ public class AuthorRepositoryTest {
 
     private Author authorWithBooks;
 
-    @Test
-    public void findAuthorsWithBooksInStock() {
-        createAuthors();
-
-        final List<Author> authorsWithBooksInStock = authorRepository.findByBooksInStock(true);
-        assertEquals(1, authorsWithBooksInStock.size());
-        assertEquals(authorWithBooks.getName(), authorsWithBooksInStock.get(0).getName());
-    }
-
-    private void createAuthors() {
+    @Before
+    public void setUp() throws Exception {
         authorWithBooks = new Author();
         authorWithBooks.setName("author with books in stock");
         final Book bookInStock = new Book(authorWithBooks, true, "book in stock");
@@ -52,9 +45,14 @@ public class AuthorRepositoryTest {
     }
 
     @Test
-    public void findByBooksInStockCustomQueryTest() {
-        createAuthors();
+    public void findAuthorsWithBooksInStock() {
+        final List<Author> authorsWithBooksInStock = authorRepository.findByBooksInStock(true);
+        assertEquals(1, authorsWithBooksInStock.size());
+        assertEquals(authorWithBooks.getName(), authorsWithBooksInStock.get(0).getName());
+    }
 
+    @Test
+    public void findByBooksInStockCustomQueryTest() {
         final List<Author> authorsWithBooksInStock = authorRepository.findByBooksInStockCustomQuery(true);
         assertEquals(1, authorsWithBooksInStock.size());
         assertEquals(authorWithBooks.getName(), authorsWithBooksInStock.get(0).getName());
@@ -62,8 +60,6 @@ public class AuthorRepositoryTest {
 
     @Test
     public void findAuthorsWithBooksInStockBySpecificationTest() {
-        createAuthors();
-
         final List<Author> authorsWithBooksInStock = authorRepository.findAll((Specification<Author>) (root, query, criteriaBuilder)
                 -> criteriaBuilder.equal(root.join(Author_.books).get(Book_.IN_STOCK), true));
         assertEquals(1, authorsWithBooksInStock.size());
@@ -72,8 +68,6 @@ public class AuthorRepositoryTest {
 
     @Test
     public void findAuthorByNameExampleMatcherTest() {
-        createAuthors();
-
         ExampleMatcher matcher = ExampleMatcher.matching()
                 .withIgnorePaths("books", "id");
 
