@@ -21,11 +21,13 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    compile 'com.querydsl:querydsl-jpa:4.2.1'
     runtime 'com.h2database:h2'
     compileOnly 'org.projectlombok:lombok'
     compileOnly 'org.hibernate:hibernate-jpamodelgen'
     annotationProcessor 'org.projectlombok:lombok'
     annotationProcessor 'org.hibernate:hibernate-jpamodelgen'
-    annotationProcessor 'javax.xml.bind:jaxb-api'
+    annotationProcessor 'com.querydsl:querydsl-apt:4.2.1:jpa'
+    annotationProcessor 'org.springframework.boot:spring-boot-starter-data-jpa'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

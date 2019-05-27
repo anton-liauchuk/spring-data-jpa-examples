@@ -1,5 +1,6 @@
 package spring.data.jpa.examples.repository;
 
+import com.querydsl.core.types.Predicate;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,10 +11,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.junit4.SpringRunner;
-import spring.data.jpa.examples.model.Author;
-import spring.data.jpa.examples.model.Author_;
-import spring.data.jpa.examples.model.Book;
-import spring.data.jpa.examples.model.Book_;
+import spring.data.jpa.examples.model.*;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,7 +31,7 @@ public class AuthorRepositoryTest {
     private Author authorWithBooks;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         authorWithBooks = new Author();
         authorWithBooks.setName("author with books in stock");
         final Book bookInStock = new Book(authorWithBooks, true, "book in stock");
@@ -77,5 +75,14 @@ public class AuthorRepositoryTest {
         assertEquals(1, ((Collection<?>) authors).size());
         assertThat(authorRepository.count(example), is(1L));
         assertThat(((Author) authors.iterator().next()).getName(), CoreMatchers.equalTo(authorWithBooks.getName()));
+    }
+
+    @Test
+    public void findAuthorWithBooksQuerydslTest() {
+        final Predicate predicate = QAuthor.author.name.equalsIgnoreCase(authorWithBooks.getName());
+        final Iterable<Author> authorsWithBooksInStock = authorRepository.findAll(predicate);
+
+        assertEquals(1, ((Collection<?>) authorsWithBooksInStock).size());
+        assertEquals(authorWithBooks.getName(), authorsWithBooksInStock.iterator().next().getName());
     }
 }

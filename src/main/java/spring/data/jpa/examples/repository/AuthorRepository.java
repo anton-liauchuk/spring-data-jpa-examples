@@ -2,6 +2,7 @@ package spring.data.jpa.examples.repository;
 
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.repository.query.QueryByExampleExecutor;
@@ -9,7 +10,8 @@ import spring.data.jpa.examples.model.Author;
 
 import java.util.List;
 
-public interface AuthorRepository extends CrudRepository<Author, Long>, JpaSpecificationExecutor, QueryByExampleExecutor {
+public interface AuthorRepository extends CrudRepository<Author, Long>, JpaSpecificationExecutor,
+        QueryByExampleExecutor, QuerydslPredicateExecutor<Author> {
 
     /**
      * Finds authors with books in stock.
