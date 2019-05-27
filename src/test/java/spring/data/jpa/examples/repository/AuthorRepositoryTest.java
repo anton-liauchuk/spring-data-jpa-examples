@@ -21,8 +21,6 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.endsWith;
-import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.startsWith;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -55,7 +53,7 @@ public class AuthorRepositoryTest {
         final Book bookNotStock = new Book(author, false, "book not stock");
         author.setBooks(Arrays.asList(bookInStock, bookNotStock));
         final Author authorWithoutBooks = new Author();
-        author.setName("author without books in stock");
+        authorWithoutBooks.setName("author without books in stock");
         authorRepository.saveAll(Arrays.asList(author, authorWithoutBooks));
 
         final List<Author> authorsWithBooksInStock = authorRepository.findByBooksInStockCustomQuery(true);
@@ -71,7 +69,7 @@ public class AuthorRepositoryTest {
         final Book bookNotStock = new Book(author, false, "book not stock");
         author.setBooks(Arrays.asList(bookInStock, bookNotStock));
         final Author authorWithoutBooks = new Author();
-        author.setName("author without books in stock");
+        authorWithoutBooks.setName("author without books in stock");
         authorRepository.saveAll(Arrays.asList(author, authorWithoutBooks));
 
         final List<Author> authorsWithBooksInStock = authorRepository.findAll((Specification<Author>) (root, query, criteriaBuilder)
@@ -88,23 +86,20 @@ public class AuthorRepositoryTest {
         final Book bookNotStock = new Book(author, false, "book not stock");
         author.setBooks(Arrays.asList(bookInStock, bookNotStock));
         final Author authorWithoutBooks = new Author();
-        author.setName("author without books in stock");
+        authorWithoutBooks.setName("author without books in stock");
         authorRepository.saveAll(Arrays.asList(author, authorWithoutBooks));
 
         final Author expectedAuthor = new Author();
-        expectedAuthor.setName("author with books in stock");
+        expectedAuthor.setName("author without books in stock");
 
         ExampleMatcher matcher = ExampleMatcher.matching()
-                .withIgnorePaths("books")
-                .withIgnorePaths("id")
-                .withMatcher("name", startsWith());
+                .withIgnorePaths("books", "id");
 
         final Example<Author> example = Example.of(expectedAuthor, matcher);
-//        final Example<Author> example = Example.of(expectedAuthor);
         final Iterable authors = authorRepository.findAll(example);
 
-//        assertEquals(1, ((Collection<?>)authors).size());
+        assertEquals(1, ((Collection<?>) authors).size());
         assertThat(authorRepository.count(example), is(1L));
-        assertThat(((Author) authors.iterator().next()).getName(), CoreMatchers.containsString(expectedAuthor.getName()));
+        assertThat(((Author) authors.iterator().next()).getName(), CoreMatchers.equalTo(expectedAuthor.getName()));
     }
 }
