@@ -11,7 +11,7 @@ import spring.data.jpa.examples.model.Author;
 import java.util.List;
 
 public interface AuthorRepository extends CrudRepository<Author, Long>, JpaSpecificationExecutor,
-        QueryByExampleExecutor, QuerydslPredicateExecutor<Author> {
+        QueryByExampleExecutor, QuerydslPredicateExecutor<Author>, AuthorRepositoryCustom {
 
     /**
      * Finds authors with books in stock.

@@ -25,8 +25,7 @@ import static org.junit.Assert.assertThat;
 @DataJpaTest
 public class AuthorRepositoryTest {
 
-    @Autowired
-    private AuthorRepository authorRepository;
+    @Autowired AuthorRepository authorRepository;
 
     private Author authorWithBooks;
 
@@ -84,5 +83,16 @@ public class AuthorRepositoryTest {
 
         assertEquals(1, ((Collection<?>) authorsWithBooksInStock).size());
         assertEquals(authorWithBooks.getName(), authorsWithBooksInStock.iterator().next().getName());
+    }
+
+    @Test
+    public void findAuthorWithBooksInStockByHibernateFilterTest() {
+        final Iterable<Author> authorsWithBooksInStock = authorRepository.findAuthorsWithBooksInStock(true);
+
+        assertEquals(1, ((Collection<?>) authorsWithBooksInStock).size());
+        final Author author = authorsWithBooksInStock.iterator().next();
+        assertEquals(authorWithBooks.getName(), author.getName());
+        assertEquals(1, author.getBooks().size());
+        assertEquals("book in stock", author.getBooks().get(0).getName());
     }
 }
