@@ -11,8 +11,11 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import spring.data.jpa.examples.model.*;
 
+import javax.persistence.EntityManager;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -26,6 +29,7 @@ import static org.junit.Assert.assertThat;
 public class AuthorRepositoryTest {
 
     @Autowired AuthorRepository authorRepository;
+    @Autowired EntityManager entityManager;
 
     private Author authorWithBooks;
 
@@ -86,6 +90,7 @@ public class AuthorRepositoryTest {
     }
 
     @Test
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public void findAuthorWithBooksInStockByHibernateFilterTest() {
         final Iterable<Author> authorsWithBooksInStock = authorRepository.findAuthorsWithBooksInStock(true);
 

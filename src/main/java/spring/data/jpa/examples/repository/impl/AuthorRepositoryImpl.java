@@ -20,10 +20,11 @@ public class AuthorRepositoryImpl implements AuthorRepositoryCustom {
 
     @Override
     public Iterable<Author> findAuthorsWithBooksInStock(boolean inStock) {
-        Filter filter = entityManager.unwrap(Session.class).enableFilter("bookFilter");
+        final Session session = entityManager.unwrap(Session.class);
+        Filter filter = session.enableFilter("bookFilter");
         filter.setParameter("inStock", inStock);
-        Iterable<Author> iterable = commentRepository.findByBooksInStock(inStock);
-        entityManager.unwrap(Session.class).disableFilter("bookFilter");
+        Iterable<Author> iterable = commentRepository.findByBooksInStockCustomQuery(inStock);
+        session.disableFilter("bookFilter");
         return iterable;
     }
     
