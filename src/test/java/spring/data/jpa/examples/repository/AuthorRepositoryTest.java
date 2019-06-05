@@ -7,15 +7,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import spring.data.jpa.examples.model.*;
 
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -25,7 +25,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
-@DataJpaTest
+@SpringBootTest
 public class AuthorRepositoryTest {
 
     @Autowired AuthorRepository authorRepository;
@@ -35,13 +35,14 @@ public class AuthorRepositoryTest {
 
     @Before
     public void setUp() {
+        authorRepository.deleteAll();
         authorWithBooks = new Author();
         authorWithBooks.setName("author with books in stock");
         final Book bookInStock = new Book(authorWithBooks, true, "book in stock");
         final Book bookNotStock = new Book(authorWithBooks, false, "book not stock");
         authorWithBooks.setBooks(Arrays.asList(bookInStock, bookNotStock));
-        final Author authorWithoutBooks = new Author();
         authorWithBooks.setName("author without books in stock");
+        final Author authorWithoutBooks = new Author();
         authorRepository.saveAll(Arrays.asList(authorWithBooks, authorWithoutBooks));
     }
 
@@ -90,7 +91,6 @@ public class AuthorRepositoryTest {
     }
 
     @Test
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public void findAuthorWithBooksInStockByHibernateFilterTest() {
         final Iterable<Author> authorsWithBooksInStock = authorRepository.findAuthorsWithBooksInStock(true);
 

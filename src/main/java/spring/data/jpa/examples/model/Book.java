@@ -1,9 +1,6 @@
 package spring.data.jpa.examples.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.FilterDef;
 
 import javax.persistence.Entity;
@@ -13,6 +10,7 @@ import javax.persistence.ManyToOne;
 @Setter
 @ToString
 @Entity
+@NoArgsConstructor
 @AllArgsConstructor
 public class Book extends BaseEntity {
 
